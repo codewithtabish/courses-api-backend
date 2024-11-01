@@ -7,8 +7,8 @@ import fs from 'fs';
 import { data } from './data';
 import { testConnection } from './config/dbconnection';
 import url from 'url';
-import { db } from './config/db';
 import { Users } from './models/course-model';
+import { db } from './config/db';
 
 const PORT = process.env.PORT || 3000;
 
@@ -73,8 +73,8 @@ testConnection()
       }
     );
 
-    server.listen(PORT, () =>
-      console.log(`Server is listening on PORT ${PORT}`)
+    server.listen(22000, () =>
+      console.log(`Server is listening on PORT ${22000}`)
     );
   })
   .catch((err) => {
