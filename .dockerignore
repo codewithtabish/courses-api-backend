@@ -1,0 +1,12 @@
+# Ignore node_modules to prevent copying dependencies from the host
+node_modules
+# Ignore build output directories
+dist
+# Ignore environment files
+.env
+# Ignore version control files
+.git
+# Ignore log files
+*.log
+# Ignore temporary files
+*.tmp
