@@ -73,8 +73,8 @@ testConnection()
       }
     );
 
-    server.listen(22000, () =>
-      console.log(`Server is listening on PORT ${22000}`)
+    server.listen(PORT, () =>
+      console.log(`Server is listening on PORT ${PORT}`)
     );
   })
   .catch((err) => {
