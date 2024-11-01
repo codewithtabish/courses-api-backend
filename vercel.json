@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    },
+    "commands": {
+      "build": "npm run build",
+      "install": "npm install"
+    },
+    "outputDirectory": "."
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/dist/index.js"
+    }
+  ]
+}
