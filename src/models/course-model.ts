@@ -17,6 +17,7 @@ export const Users = pgTable('users', {
   clerkId: varchar('clerk_id', { length: 255 }).notNull().unique(), // Clerk user ID
   name: varchar('name', { length: 255 }).notNull(),
   email: varchar('email', { length: 255 }).notNull().unique(),
+  isStudent: boolean('isStudent').default(false),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   isAdmin: boolean('is_admin').default(false),
 });
@@ -26,6 +27,7 @@ export const Courses = pgTable('courses', {
   id: serial('id').primaryKey(),
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description').notNull(),
+
   price: integer('price').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   published: boolean('published').default(false),
