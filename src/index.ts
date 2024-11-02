@@ -15,7 +15,7 @@ import {
   ValidationResponse,
 } from './validations/userValidation';
 
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || '3000', 10);
 
 testConnection()
   .then(() => {
@@ -134,6 +134,27 @@ testConnection()
               ],
             })
           );
+        } else if (req.url === '/book-vichel') {
+          const userAgent = req.headers['user-agent'];
+          let amount = 0;
+          let message = '';
+
+          if (/iPhone|iPad|iPod|Macintosh/i.test(userAgent)) {
+            amount = 50;
+            message = 'Special booking amount for iOS/macOS users';
+          } else {
+            amount = 40;
+            message = 'Standard booking amount for all other users';
+          }
+
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(
+            JSON.stringify({
+              status: true,
+              message: message,
+              amount: amount,
+            })
+          );
         } else {
           res.statusCode = 302;
           res.setHeader('Location', '/');
@@ -145,6 +166,21 @@ testConnection()
     server.listen(PORT, () =>
       console.log(`Server is listening on PORT ${PORT}`)
     );
+
+    server.on('error', (error: NodeJS.ErrnoException) => {
+      try {
+        if (error.code === 'EADDRINUSE') {
+          console.error(
+            `Port ${PORT} is already in use. Trying a different port...`
+          );
+          // server.listen(PORT + 1); // Try a different port
+        } else {
+          console.error(`Server error: ${error.message}`);
+        }
+      } catch (error) {
+        console.error(`Server error: ${error.message}`);
+      }
+    });
   })
 
   .catch((err) => {
