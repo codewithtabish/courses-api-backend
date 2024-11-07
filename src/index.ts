@@ -67,6 +67,13 @@ async function startServer() {
         cpus: 'The process Id is ' + process.pid,
       });
     });
+    app.get('/health', (req: Request, res: Response) => {
+      res.status(200).json({
+        status: true,
+        message: 'Server is running and this is health ',
+        cpus: 'The process Id is ' + process.pid,
+      });
+    });
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
