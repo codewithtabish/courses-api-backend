@@ -3,7 +3,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 
 // Validate the DATABASE_URL environment variable
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl = process.env.DATABASE_URL!;
 
 if (!databaseUrl) {
   console.error('Error: DATABASE_URL environment variable is not set.');

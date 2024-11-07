@@ -16,6 +16,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.8.1",
     "drizzle-kit": "^0.26.2",
@@ -26,9 +27,10 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.35.3",
-    "express": "^4.21.1",
+    "express": "^5.0.1",
     "postgres": "^3.4.5"
   }
 }
