@@ -12,30 +12,6 @@ const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 const cpuLength = os.cpus().length;
 
-// Check if the process is primary before logging
-if (cluster.isPrimary) {
-  console.log('Talha');
-  console.log(`Primary process ID: ${process.pid}`);
-
-  // Fork workers based on the number of CPU cores
-  for (let i = 0; i < cpuLength; i++) {
-    const worker = cluster.fork();
-    console.log(`Forked worker with process ID: ${worker.process.pid}`);
-  }
-
-  // Restart worker if it crashes
-  cluster.on('exit', (worker, code, signal) => {
-    console.log(
-      `Worker ${worker.process.pid} died with code: ${code}. Forking a new worker...`
-    );
-    const newWorker = cluster.fork();
-    console.log(`Forked new worker with process ID: ${newWorker.process.pid}`);
-  });
-} else {
-  // Only the worker processes will start the server
-  startServer();
-}
-
 app.use(express.json());
 app.use(cors());
 
@@ -83,3 +59,5 @@ async function startServer() {
     process.exit(1);
   }
 }
+
+startServer();
