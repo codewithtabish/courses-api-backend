@@ -24,8 +24,10 @@ COPY --from=builder /app/package*.json ./
 # Install only production dependencies
 RUN npm ci --only=production
 
+# Use environment variable from .env
 ENV NODE_ENV=production
+ENV PORT=${PORT}
 
-EXPOSE 9000
+EXPOSE ${PORT}
 
 CMD ["node", "dist/index.js"]
