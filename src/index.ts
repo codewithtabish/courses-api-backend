@@ -5,8 +5,6 @@ dotenv.config();
 import express, { Application, Request, Response } from 'express';
 import { testConnection } from './config/dbconnection';
 import cors from 'cors';
-import cluster from 'cluster';
-import os from 'os';
 import { doSomeHeavyTask } from './utils/heavyTask';
 import client, { Counter, Histogram } from 'prom-client';
 import responseTime from 'response-time';
@@ -15,7 +13,6 @@ import LokiTransport from 'winston-loki';
 
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
-const cpuLength = os.cpus().length;
 
 app.use(express.json());
 app.use(cors());
@@ -72,23 +69,6 @@ app.use(
   })
 );
 
-// Middleware to measure response time using response-time
-app.use(
-  responseTime((req: Request, res: Response) => {
-    const responseDuration = res.get('X-Response-Time') || '0'; // Get the response time from the header
-
-    // Record the response time with labels (method, status code, and route) to Prometheus
-    httpRequestDurationMicroseconds.observe(
-      {
-        method: req.method,
-        status_code: res.statusCode.toString(),
-        route: req.path,
-      },
-      Number(responseDuration) / 1000 // Convert ms to seconds
-    );
-  })
-);
-
 // Probe every 5th second.
 
 // Ensure you connect to the database before starting the server
@@ -104,7 +84,6 @@ async function startServer() {
       res.status(200).json({
         status: true,
         message: 'Server is running',
-        cpus: `Process ID: ${process.pid}`,
       });
     });
 
@@ -113,7 +92,6 @@ async function startServer() {
       res.status(200).json({
         status: true,
         message: 'Test route is working',
-        cpus: `Process ID: ${process.pid}`,
       });
     });
 
@@ -140,7 +118,6 @@ async function startServer() {
       res.status(200).json({
         status: true,
         message: 'Health check passed',
-        cpus: `Process ID: ${process.pid}`,
       });
     });
 
@@ -166,19 +143,5 @@ async function startServer() {
   }
 }
 
-// Handling clustering if enabled
-if (cluster.isPrimary) {
-  console.log(`Primary process PID: ${process.pid}`);
-  for (let i = 0; i < cpuLength; i++) {
-    cluster.fork();
-  }
-
-  // Restart worker on exit
-  cluster.on('exit', (worker) => {
-    console.warn(`Worker PID ${worker.process.pid} died. Restarting...`);
-    cluster.fork();
-  });
-} else {
-  // Start server in worker processes
-  startServer();
-}
+// Start server directly without clustering
+startServer();
