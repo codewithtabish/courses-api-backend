@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s  # Adjust the scrape interval for production
+
+scrape_configs:
+  - job_name: 'nodejs_app'
+    metrics_path: '/metrics'  # The endpoint where metrics are exposed
+    static_configs:
+      - targets:
+          - 'courses-marketplace.codewithtabish.com:35000'  # Replace with the correct port for your app's metrics

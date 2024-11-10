@@ -5,16 +5,60 @@ version: '3.8'
 services:
   app:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: . # Use the current directory as the context
+      dockerfile: Dockerfile # Ensure your Dockerfile is in the root of the project
     ports:
-      - '${PORT}:${PORT}'
+      - '80:3000' # Expose the app on port 80 (or use another port as required by your production setup)
     env_file:
-      - .env
+      - .env # Ensure the .env file contains the correct production variables
     environment:
-      - PORT=${PORT}
+      - PORT=3000
       - DATABASE_URL=${DATABASE_URL}
-      - NODE_ENV=${NODE_ENV}
+      - NODE_ENV=production # Ensure NODE_ENV is set to 'production' for performance optimization
     volumes:
-      - ./media:/app/media
-    restart: always
+      - ./media:/app/media # Mount media directory to persist files
+      - /var/log:/var/log # Mount log files for Loki to collect logs
+    restart: always # Ensure the application restarts automatically if it crashes
+    networks:
+      - monitoring # Connect to the monitoring network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - '9090:9090' # Expose Prometheus UI on port 9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml # Mount Prometheus config file
+    restart: always # Ensure Prometheus restarts if it crashes
+    networks:
+      - monitoring # Connect to the monitoring network
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - '3000:3000' # Expose Grafana UI on port 3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Set the Grafana admin password (make sure to change for security)
+    depends_on:
+      - prometheus # Ensure Prometheus starts before Grafana
+      - loki # Ensure Loki starts before Grafana
+    restart: always # Restart Grafana if it crashes
+    networks:
+      - monitoring # Connect to the monitoring network
+
+  loki:
+    image: grafana/loki
+    container_name: loki
+    ports:
+      - '3100:3100' # Expose Loki API on port 3100
+    volumes:
+      - ./loki-config.yml:/etc/loki/loki-config.yml # Mount Loki config file
+      - /var/log:/var/log # Ensure logs from the app are collected by Loki
+    restart: always # Restart Loki if it crashes
+    networks:
+      - monitoring # Connect to the monitoring network
+
+networks:
+  monitoring: # Create a separate network for Prometheus, Grafana, and Loki to communicate
+    driver: bridge # Use bridge networking for communication between the containers
